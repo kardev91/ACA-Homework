@@ -357,8 +357,3 @@ class Teacher extends Person {
         return `${string} teacher and receives a ${this.pay} salary`;
     }
 }
-
-let student = new Student('Jhon','Travolta','male',25,3,5,'HTML','CSS');
-console.log(student.passExam('HTML'),'aaaa');
-console.log(student.passExam('CSS'),'aaaa');
-console.log(student,'aaaa');
