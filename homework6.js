@@ -239,8 +239,8 @@ class Account {
 
     transferTo(anotherAccount, amount) {
         if (amount < this.balance) {
-            anotherAccount = this.balance - amount;
-            this.balance = anotherAccount;
+            anotherAccount.balance = anotherAccount.credit(amount)
+            this.balance = this.debit(amount);
             return anotherAccount;
         }
         alert('Amount exceeded balance')
@@ -303,46 +303,85 @@ class Person {
     set age(value) {
         this._age = value
     }
+
+    toString() {
+        return JSON.stringify(this, null, 2)
+    }
 }
 
 class Student extends Person {
-    constructor(firstName, lastName, gender,age,year, fee, ...programs) {
+    constructor(firstName, lastName, gender, age, year, fee, ...programs) {
         super(firstName, lastName, gender, age);
         this.programs = programs;
         this.year = year;
         this.fee = fee;
-        this.studentExamObj = this.programs.reduce((obj,item) => {
-            return {
-                ...obj,
-                [item]:false,
-            }
-        },{})
+        this.createExamObj(programs)
+    }
+
+    createExamObj(programs){
+        this.studentExamObj = {};
+        for (let i = 0; i < programs.length; i++){
+            this.studentExamObj[programs[i]] = false;
+        }
+    }
+
+    get programs(){
+        return this._programs;
+    }
+    set programs(value){
+        if (Array.isArray(value)){
+            this.createExamObj(value);
+        }else {
+            alert(`Not valid type for programs`)
+        }
+    }
+
+    get year(){
+        return this._year
+    }
+
+    set year(value){
+        this._year = value
+    }
+
+    get fee(){
+        return this._fee
+    }
+
+    set fee(value){
+        this._fee = value
     }
 
     passExam(program, grade) {
-        if (this.studentExamObj.hasOwnProperty(program)) {
+        if (this.studentExamObj.hasOwnProperty(program) && grade >= 50) {
             this.studentExamObj[program] = true;
         }
 
-        function allPassedExam(obj) {
-            for (let key in obj)
-                if (!obj[key])
-                    return false;
-            return true;
+        let paseedValue = false;
+
+        for (let key in this.studentExamObj) {
+            if (!this.studentExamObj[key]) {
+                return false;
+            }
+            paseedValue = true;
         }
 
-        if (allPassedExam(this.studentExamObj)) {
-            grade = 'greate';
+        if (paseedValue) {
+            this.studentExamObj = {};
             this.year++
         }
     }
 
+    toString() {
+        return JSON.stringify(this, null, 2)
+    }
 }
 
 class Teacher extends Person {
-    constructor(firstName, lastName, gender,age,pay){
+    constructor(firstName, lastName, gender, age, program, pay) {
         super(firstName, lastName, gender, age);
-        this.pay = pay
+        this.pay = pay;
+        this.program = program
     }
 
     get pay() {
@@ -353,7 +392,19 @@ class Teacher extends Person {
         this._pay = value
     }
 
-    program(string){
-        return `${string} teacher and receives a ${this.pay} salary`;
+    get progarm() {
+        return this._program
+    }
+
+    set progarm(value) {
+        if (typeof value !== 'string') {
+            alert('Entered value must be string');
+            return
+        }
+        this._program = value
+    }
+
+    toString() {
+        return JSON.stringify(this, null, 2)
     }
 }
