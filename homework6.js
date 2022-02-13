@@ -266,7 +266,7 @@ class Account {
 // 5
 
 class Person {
-    constructor(firstName, lastName, gender, age) {
+    constructor({firstName, lastName, gender, age} = {}) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -310,8 +310,8 @@ class Person {
 }
 
 class Student extends Person {
-    constructor(firstName, lastName, gender, age, year, fee, ...programs) {
-        super(firstName, lastName, gender, age);
+    constructor({year, fee,programs, ...rest} = {}) {
+        super(rest);
         this.programs = programs;
         this.year = year;
         this.fee = fee;
@@ -319,9 +319,9 @@ class Student extends Person {
     }
 
     createExamObj(programs){
-        this.studentExamObj = {};
+        this._studentExamObj = {};
         for (let i = 0; i < programs.length; i++){
-            this.studentExamObj[programs[i]] = false;
+            this._studentExamObj[programs[i]] = false;
         }
     }
 
@@ -331,6 +331,7 @@ class Student extends Person {
     set programs(value){
         if (Array.isArray(value)){
             this.createExamObj(value);
+            this._programs = value;
         }else {
             alert(`Not valid type for programs`)
         }
@@ -353,22 +354,23 @@ class Student extends Person {
     }
 
     passExam(program, grade) {
-        if (this.studentExamObj.hasOwnProperty(program) && grade >= 50) {
-            this.studentExamObj[program] = true;
+        if (this._studentExamObj.hasOwnProperty(program) && grade >= 50) {
+            this._studentExamObj[program] = true;
         }
 
         let paseedValue = false;
 
-        for (let key in this.studentExamObj) {
-            if (!this.studentExamObj[key]) {
-                return false;
+        for (let key in this._studentExamObj) {
+            if (!this._studentExamObj[key]) {
+                return;
             }
             paseedValue = true;
         }
 
         if (paseedValue) {
-            this.studentExamObj = {};
-            this.year++
+            this.createExamObj(this.programs);
+            this.year++;
+            this.age++
         }
     }
 
@@ -378,8 +380,8 @@ class Student extends Person {
 }
 
 class Teacher extends Person {
-    constructor(firstName, lastName, gender, age, program, pay) {
-        super(firstName, lastName, gender, age);
+    constructor({program, pay, ...rest} = {}) {
+        super(rest);
         this.pay = pay;
         this.program = program
     }
